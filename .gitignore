@@ -1,0 +1,7 @@
+# The live database and uploaded images are server state, not code —
+# don't commit them, so pulling/pushing never clobbers real data.
+/data/*.sqlite
+/uploads/links/*
+/uploads/logo/*
+!/uploads/links/.gitkeep
+!/uploads/logo/.gitkeep
