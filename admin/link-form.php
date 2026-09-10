@@ -74,13 +74,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= $isEdit ? 'Edit link' : 'Add link' ?> — Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
 <div class="page">
   <div class="admin-header">
-    <h1 class="admin-title serif"><?= $isEdit ? 'Edit link' : 'Add link' ?></h1>
+    <h1 class="admin-title"><?= $isEdit ? 'Edit link' : 'Add link' ?></h1>
   </div>
 
   <div class="container">

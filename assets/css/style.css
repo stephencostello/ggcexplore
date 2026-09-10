@@ -4,9 +4,10 @@
   Palette: warm white background, near-black ink, one confident red used
   sparingly (never as a background wash) so it reads as a mark of emphasis —
   the pin, the primary action, the logo ring — not decoration.
-  Type: Fraunces (serif) carries the church name/headline with some warmth
-  and weight; Inter (sans) handles everything functional — body copy, links,
-  buttons, admin UI — so the page never feels like a corporate SaaS template.
+  Type: one family, Barlow, throughout. Hierarchy comes from weight and size,
+  not a serif/sans pairing — headings sit at 700, body text at 400, functional
+  UI (links, buttons, labels) leans on 500/600. Keeps the page cohesive and
+  quick to load.
 */
 
 :root {
@@ -32,16 +33,16 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, .serif {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+h1, h2, h3 {
+  font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   margin: 0;
 }
 
@@ -105,7 +106,8 @@ button, input, textarea, select {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
   font-size: 28px;
   color: var(--red);
   background: var(--red-tint);
