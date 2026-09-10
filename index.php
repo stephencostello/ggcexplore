@@ -56,6 +56,10 @@ $ogImage = $logo ? $pageUrl . ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : null;
       <?php endif; ?>
       <h1 class="profile-name"><?= h($churchName) ?></h1>
 
+      <?php if ($intro): ?>
+        <p class="profile-intro"><?= nl2br(h($intro)) ?></p>
+      <?php endif; ?>
+
       <?php if ($socials): ?>
         <div class="socials">
           <?php foreach ($socials as $key => $url): ?>
@@ -63,10 +67,6 @@ $ogImage = $logo ? $pageUrl . ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : null;
                aria-label="<?= h(SOCIAL_PLATFORMS[$key]['label']) ?>"><?= social_icon_svg($key) ?></a>
           <?php endforeach; ?>
         </div>
-      <?php endif; ?>
-
-      <?php if ($intro): ?>
-        <p class="profile-intro"><?= nl2br(h($intro)) ?></p>
       <?php endif; ?>
     </div>
 
