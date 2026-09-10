@@ -8,7 +8,9 @@
 // --- Paths -----------------------------------------------------------------
 define('BASE_DIR', __DIR__);
 define('DATA_DIR', BASE_DIR . '/data');
-define('DB_PATH', DATA_DIR . '/church.sqlite');
+// Normally the one database under /data. Set GRACELINKS_DB_PATH to point a
+// throwaway/preview instance at a different file without touching real data.
+define('DB_PATH', getenv('GRACELINKS_DB_PATH') ?: DATA_DIR . '/church.sqlite');
 define('UPLOADS_DIR', BASE_DIR . '/uploads');
 define('UPLOADS_LINKS_DIR', UPLOADS_DIR . '/links');
 define('UPLOADS_LOGO_DIR', UPLOADS_DIR . '/logo');
