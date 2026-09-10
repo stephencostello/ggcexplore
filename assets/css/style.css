@@ -214,6 +214,83 @@ button, input, textarea, select {
 }
 
 /* ---------------------------------------------------------------------- */
+/* Public home — dark, image-led theme.                                   */
+/* Everything here is scoped to body.home so the admin panel, which       */
+/* shares this stylesheet, keeps its light theme untouched.               */
+/* ---------------------------------------------------------------------- */
+
+body.home {
+  min-height: 100vh;
+  background: #222222;
+}
+
+/* Full-bleed hero: image on the bottom, a transparent-to-#222 fade on    */
+/* top of it so it melts into the page rather than cutting off.           */
+.hero {
+  height: 40vh;
+  background-image:
+    linear-gradient(to bottom, rgba(34, 34, 34, 0) 0%, #222222 100%),
+    url('../img/hero.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+body.home .page {
+  min-height: 64vh;
+  padding-top: 0;
+  /* Tuck the content up into the faded lower part of the hero so it reads
+     as one continuous piece rather than a band with a gap under it. */
+  margin-top: -12vh;
+  position: relative;
+}
+
+body.home .profile-name { color: #ffffff; }
+
+body.home .profile-intro { color: rgba(255, 255, 255, 0.72); }
+
+body.home .site-footer { color: rgba(255, 255, 255, 0.5); }
+
+body.home .empty-state {
+  color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Social row: icon-only, circular, light on dark — sits between the      */
+/* church name and the intro paragraph.                                   */
+body.home .socials {
+  gap: 14px;
+  margin: 12px 0 4px;
+}
+
+body.home .social-icon {
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+
+body.home .social-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+body.home .social-icon:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.65);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body.home .social-icon {
+    transition: opacity 120ms ease, background-color 120ms ease, border-color 120ms ease;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
 /* Admin shared                                                           */
 /* ---------------------------------------------------------------------- */
 

@@ -43,7 +43,8 @@ $ogImage = $logo ? $pageUrl . ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : null;
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
+<body class="home">
+<div class="hero" role="presentation"></div>
 <div class="page">
   <div class="container">
 
@@ -54,19 +55,20 @@ $ogImage = $logo ? $pageUrl . ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : null;
         <div class="profile-logo profile-logo--placeholder"><?= h(mb_substr($churchName, 0, 1)) ?></div>
       <?php endif; ?>
       <h1 class="profile-name"><?= h($churchName) ?></h1>
+
+      <?php if ($socials): ?>
+        <div class="socials">
+          <?php foreach ($socials as $key => $url): ?>
+            <a class="social-icon" href="<?= h($url) ?>" target="_blank" rel="noopener"
+               aria-label="<?= h(SOCIAL_PLATFORMS[$key]['label']) ?>"><?= social_icon_svg($key) ?></a>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
       <?php if ($intro): ?>
         <p class="profile-intro"><?= nl2br(h($intro)) ?></p>
       <?php endif; ?>
     </div>
-
-    <?php if ($socials): ?>
-      <div class="socials">
-        <?php foreach ($socials as $key => $url): ?>
-          <a class="social-icon" href="<?= h($url) ?>" target="_blank" rel="noopener"
-             aria-label="<?= h(SOCIAL_PLATFORMS[$key]['label']) ?>"><?= social_icon_svg($key) ?></a>
-        <?php endforeach; ?>
-      </div>
-    <?php endif; ?>
 
     <?php if (empty($links)): ?>
       <div class="empty-state">Links are on their way — check back soon.</div>
