@@ -147,10 +147,7 @@ button, input, textarea, select {
   position: relative;
 }
 
-.link-card--pinned {
-  border-color: var(--red);
-  box-shadow: 0 0 0 1px var(--red), var(--shadow);
-}
+/* Pinned cards are marked by the badge alone — no border/ring treatment. */
 
 .pinned-badge {
   position: absolute;
