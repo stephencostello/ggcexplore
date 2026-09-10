@@ -11,6 +11,7 @@ if (empty($settings['setup_complete'])) {
 }
 
 $links = get_public_links();
+$socials = get_social_links($settings);
 
 $churchName = $settings['church_name'] ?: 'Grace Generation Church';
 $intro = $settings['intro_text'] ?? '';
@@ -57,6 +58,15 @@ $ogImage = $logo ? $pageUrl . ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : null;
         <p class="profile-intro"><?= nl2br(h($intro)) ?></p>
       <?php endif; ?>
     </div>
+
+    <?php if ($socials): ?>
+      <div class="socials">
+        <?php foreach ($socials as $key => $url): ?>
+          <a class="social-icon" href="<?= h($url) ?>" target="_blank" rel="noopener"
+             aria-label="<?= h(SOCIAL_PLATFORMS[$key]['label']) ?>"><?= social_icon_svg($key) ?></a>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
 
     <?php if (empty($links)): ?>
       <div class="empty-state">Links are on their way — check back soon.</div>

@@ -48,6 +48,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if ($form === 'social') {
+        $fields = [];
+        foreach (SOCIAL_PLATFORMS as $key => $meta) {
+            $col = social_column($key);
+            $val = trim($_POST[$col] ?? '');
+            if ($val !== '' && !is_valid_url($val)) {
+                $errors[] = $meta['label'] . ' must be a full URL, including https://';
+            }
+            $fields[$col] = $val !== '' ? $val : null;
+        }
+        if (!$errors) {
+            update_settings($fields);
+            $success = 'Social links updated.';
+            $settings = get_settings();
+        }
+    }
+
     if ($form === 'password') {
         $current = $_POST['current_password'] ?? '';
         $new = $_POST['new_password'] ?? '';
@@ -132,6 +149,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <button type="submit" class="btn btn-primary">Save branding</button>
+      </form>
+    </div>
+
+    <p class="section-title">Social links</p>
+    <div class="card">
+      <form method="post">
+        <?= csrf_field() ?>
+        <input type="hidden" name="form" value="social">
+        <p class="field-hint" style="margin-bottom:16px;">Shown as a row of icons under the intro text, in this order. Leave a field blank to hide that icon.</p>
+
+        <?php foreach (SOCIAL_PLATFORMS as $key => $meta): $col = social_column($key); ?>
+          <div class="field">
+            <label for="<?= h($col) ?>"><?= h($meta['label']) ?></label>
+            <input type="url" id="<?= h($col) ?>" name="<?= h($col) ?>" value="<?= h($settings[$col] ?? '') ?>" placeholder="https://">
+          </div>
+        <?php endforeach; ?>
+
+        <button type="submit" class="btn btn-primary">Save social links</button>
       </form>
     </div>
 

@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/social.php';
 
 // --- Settings ----------------------------------------------------------
 
@@ -16,7 +17,12 @@ function get_settings(): array
 
 function update_settings(array $fields): void
 {
-    $allowed = ['church_name', 'logo_filename', 'intro_text', 'copyright_text', 'admin_password_hash', 'setup_complete'];
+    $allowed = [
+        'church_name', 'logo_filename', 'intro_text', 'copyright_text',
+        'admin_password_hash', 'setup_complete',
+        'social_whatsapp', 'social_instagram', 'social_facebook',
+        'social_spotify', 'social_apple_music', 'social_youtube',
+    ];
     $set = [];
     $params = [];
     foreach ($fields as $key => $value) {
