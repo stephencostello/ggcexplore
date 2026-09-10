@@ -175,13 +175,13 @@ button, input, textarea, select {
 
 .link-name {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 19px;
   margin: 0 0 2px;
 }
 
 .link-description {
   color: var(--ink-soft);
-  font-size: 14px;
+  font-size: 11px;
   margin: 0;
 }
 
