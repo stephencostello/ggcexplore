@@ -19,17 +19,7 @@ unset($_SESSION['flash']);
 </head>
 <body>
 <div class="page">
-  <div class="admin-header">
-    <h1 class="admin-title">Links</h1>
-    <a href="logout.php" class="icon-btn" title="Log out" aria-label="Log out">⏻</a>
-  </div>
-
-  <nav class="admin-nav">
-    <a href="dashboard.php" class="active">Links</a>
-    <a href="trash.php">Trash</a>
-    <a href="settings.php">Settings</a>
-    <a href="../index.php" target="_blank">View page ↗</a>
-  </nav>
+  <?php $adminTitle = 'Links'; $activeNav = 'links'; require __DIR__ . '/../includes/admin-nav.php'; ?>
 
   <div class="container">
 

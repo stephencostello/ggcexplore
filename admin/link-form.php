@@ -19,7 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $values['name'] = trim($_POST['name'] ?? '');
     $values['url'] = trim($_POST['url'] ?? '');
     $values['description'] = trim($_POST['description'] ?? '');
-    $values['visible'] = !empty($_POST['visible']) ? 1 : 0;
+    // Visibility isn't editable here — new links go live immediately and are
+    // hidden later from the list page. Edits keep whatever's already set.
+    $values['visible'] = $isEdit ? (int) $link['visible'] : 1;
     $removeImage = !empty($_POST['remove_image']);
 
     if ($values['name'] === '') $errors[] = 'Name is required.';
@@ -115,12 +117,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
           <?php endif; ?>
           <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp">
-          <p class="field-hint">JPG, PNG or WebP, up to 2MB. Uploading a new image replaces the current one.</p>
-        </div>
-
-        <div class="checkbox-row">
-          <input type="checkbox" id="visible" name="visible" value="1" <?= $values['visible'] ? 'checked' : '' ?>>
-          <label for="visible">Visible on the public page</label>
         </div>
 
         <div class="btn-row">

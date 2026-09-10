@@ -1,7 +1,7 @@
 /*
   Design tokens
   -------------
-  Palette: warm white background, near-black ink, one confident red used
+  Palette: white background, near-black ink, one confident red used
   sparingly (never as a background wash) so it reads as a mark of emphasis —
   the primary action, the logo ring — not decoration.
   Type: one family, Barlow, throughout. Hierarchy comes from weight and size,
@@ -12,7 +12,7 @@
 
 :root {
   --white: #FFFFFF;
-  --paper: #FAF9F7;
+  --paper: #FFFFFF;
   --ink: #17140F;
   --ink-soft: #4A453D;
   --line: #E7E2D8;
@@ -230,7 +230,9 @@ button, input, textarea, select {
 
 .admin-nav {
   display: flex;
-  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
   font-size: 14px;
   margin-bottom: 20px;
   width: 100%;
@@ -246,6 +248,11 @@ button, input, textarea, select {
 }
 
 .admin-nav a.active { color: var(--red); }
+
+.admin-nav .admin-nav-view {
+  margin-left: auto;
+  color: var(--ink);
+}
 
 .card {
   background: var(--white);
