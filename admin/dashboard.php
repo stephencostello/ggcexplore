@@ -46,12 +46,10 @@ unset($_SESSION['flash']);
     <?php else: ?>
       <ul class="admin-links">
         <?php
-        $unpinnedCount = count(array_filter($links, fn($l) => !$l['pinned']));
-        $unpinnedIndex = 0;
-        foreach ($links as $link):
-            $isFirst = !$link['pinned'] && $unpinnedIndex === 0;
-            $isLast = !$link['pinned'] && $unpinnedIndex === $unpinnedCount - 1;
-            if (!$link['pinned']) $unpinnedIndex++;
+        $lastIndex = count($links) - 1;
+        foreach ($links as $i => $link):
+            $isFirst = $i === 0;
+            $isLast = $i === $lastIndex;
         ?>
           <li class="admin-link-row<?= $link['visible'] ? '' : ' admin-link-row--hidden' ?>">
             <?php if ($link['image_filename']): ?>
@@ -63,7 +61,6 @@ unset($_SESSION['flash']);
             <div class="admin-link-info">
               <div class="admin-link-name">
                 <?= h($link['name']) ?>
-                <?php if ($link['pinned']): ?><span class="tag">PIN</span><?php endif; ?>
                 <?php if (!$link['visible']): ?><span class="tag" style="background:#4A453D;">HIDDEN</span><?php endif; ?>
               </div>
               <div class="admin-link-url"><?= h($link['url']) ?></div>
@@ -71,28 +68,21 @@ unset($_SESSION['flash']);
 
             <div class="admin-link-actions">
               <div class="icon-btn-row">
-                <?php if (!$link['pinned']): ?>
-                  <form method="post" action="move.php">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="id" value="<?= (int) $link['id'] ?>">
-                    <input type="hidden" name="direction" value="up">
-                    <button class="icon-btn" title="Move up" <?= $isFirst ? 'disabled' : '' ?>>↑</button>
-                  </form>
-                  <form method="post" action="move.php">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="id" value="<?= (int) $link['id'] ?>">
-                    <input type="hidden" name="direction" value="down">
-                    <button class="icon-btn" title="Move down" <?= $isLast ? 'disabled' : '' ?>>↓</button>
-                  </form>
-                <?php endif; ?>
+                <form method="post" action="move.php">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="id" value="<?= (int) $link['id'] ?>">
+                  <input type="hidden" name="direction" value="up">
+                  <button class="icon-btn" title="Move up" <?= $isFirst ? 'disabled' : '' ?>>↑</button>
+                </form>
+                <form method="post" action="move.php">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="id" value="<?= (int) $link['id'] ?>">
+                  <input type="hidden" name="direction" value="down">
+                  <button class="icon-btn" title="Move down" <?= $isLast ? 'disabled' : '' ?>>↓</button>
+                </form>
                 <a class="icon-btn" href="link-form.php?id=<?= (int) $link['id'] ?>" title="Edit">✎</a>
               </div>
               <div class="icon-btn-row">
-                <form method="post" action="pin.php">
-                  <?= csrf_field() ?>
-                  <input type="hidden" name="id" value="<?= (int) $link['id'] ?>">
-                  <button class="icon-btn" title="<?= $link['pinned'] ? 'Unpin' : 'Pin to top' ?>"><?= $link['pinned'] ? '📌' : '📍' ?></button>
-                </form>
                 <form method="post" action="visibility.php">
                   <?= csrf_field() ?>
                   <input type="hidden" name="id" value="<?= (int) $link['id'] ?>">

@@ -53,7 +53,6 @@ function migrate(PDO $pdo): void
             url TEXT NOT NULL,
             image_filename TEXT,
             description TEXT,
-            pinned INTEGER NOT NULL DEFAULT 0,
             visible INTEGER NOT NULL DEFAULT 1,
             sort_order INTEGER NOT NULL DEFAULT 0,
             clicks INTEGER NOT NULL DEFAULT 0,

@@ -3,7 +3,7 @@
   -------------
   Palette: warm white background, near-black ink, one confident red used
   sparingly (never as a background wash) so it reads as a mark of emphasis —
-  the pin, the primary action, the logo ring — not decoration.
+  the primary action, the logo ring — not decoration.
   Type: one family, Barlow, throughout. Hierarchy comes from weight and size,
   not a serif/sans pairing — headings sit at 700, body text at 400, functional
   UI (links, buttons, labels) leans on 500/600. Keeps the page cohesive and
@@ -147,21 +147,6 @@ button, input, textarea, select {
   position: relative;
 }
 
-/* Pinned cards are marked by the badge alone — no border/ring treatment. */
-
-.pinned-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: var(--red);
-  color: var(--white);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 9px;
-  border-radius: 999px;
-  z-index: 1;
-}
-
 .link-image {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -170,18 +155,18 @@ button, input, textarea, select {
 }
 
 .link-body {
-  padding: 14px 16px;
+  padding: 20px;
 }
 
 .link-name {
   font-weight: 600;
-  font-size: 19px;
+  font-size: 18px;
   margin: 0 0 2px;
 }
 
 .link-description {
   color: var(--ink-soft);
-  font-size: 11px;
+  font-size: 12px;
   margin: 0;
 }
 

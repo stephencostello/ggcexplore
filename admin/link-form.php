@@ -11,7 +11,7 @@ if ($id && (!$link || $link['deleted_at'] !== null)) {
 $isEdit = $link !== null;
 
 $errors = [];
-$values = $link ?: ['name' => '', 'url' => '', 'description' => '', 'pinned' => 0, 'visible' => 1, 'image_filename' => null];
+$values = $link ?: ['name' => '', 'url' => '', 'description' => '', 'visible' => 1, 'image_filename' => null];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
@@ -19,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $values['name'] = trim($_POST['name'] ?? '');
     $values['url'] = trim($_POST['url'] ?? '');
     $values['description'] = trim($_POST['description'] ?? '');
-    $values['pinned'] = !empty($_POST['pinned']) ? 1 : 0;
     $values['visible'] = !empty($_POST['visible']) ? 1 : 0;
     $removeImage = !empty($_POST['remove_image']);
 
@@ -47,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'name' => $values['name'],
             'url' => $values['url'],
             'description' => $values['description'] ?: null,
-            'pinned' => $values['pinned'],
             'visible' => $values['visible'],
             'image_filename' => $finalImage,
         ];
@@ -123,11 +121,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="checkbox-row">
           <input type="checkbox" id="visible" name="visible" value="1" <?= $values['visible'] ? 'checked' : '' ?>>
           <label for="visible">Visible on the public page</label>
-        </div>
-
-        <div class="checkbox-row">
-          <input type="checkbox" id="pinned" name="pinned" value="1" <?= $values['pinned'] ? 'checked' : '' ?>>
-          <label for="pinned">Pin to top (only one link can be pinned at a time)</label>
         </div>
 
         <div class="btn-row">

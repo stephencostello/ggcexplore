@@ -66,7 +66,6 @@ $ogImage = $logo ? $pageUrl . ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : null;
           <li>
             <a class="link-card"
                href="go.php?id=<?= (int) $link['id'] ?>" target="_blank" rel="noopener">
-              <?php if ($link['pinned']): ?><span class="pinned-badge">Pinned</span><?php endif; ?>
               <?php if ($link['image_filename']): ?>
                 <img class="link-image" src="<?= h(UPLOADS_URL) ?>/links/<?= h($link['image_filename']) ?>" alt="">
               <?php endif; ?>

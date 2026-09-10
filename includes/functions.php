@@ -36,13 +36,13 @@ function update_settings(array $fields): void
 
 // --- Links: reads ------------------------------------------------------
 
-/** Visible, non-deleted links for the public page. Pinned link first, then by sort_order. */
+/** Visible, non-deleted links for the public page, in manual sort order. */
 function get_public_links(): array
 {
     return db()->query("
         SELECT * FROM links
         WHERE deleted_at IS NULL AND visible = 1
-        ORDER BY pinned DESC, sort_order ASC, id ASC
+        ORDER BY sort_order ASC, id ASC
     ")->fetchAll();
 }
 
@@ -52,7 +52,7 @@ function get_admin_links(): array
     return db()->query("
         SELECT * FROM links
         WHERE deleted_at IS NULL
-        ORDER BY pinned DESC, sort_order ASC, id ASC
+        ORDER BY sort_order ASC, id ASC
     ")->fetchAll();
 }
 
@@ -81,20 +81,15 @@ function create_link(array $data): int
     $pdo = db();
     $nextOrder = (int) $pdo->query('SELECT COALESCE(MAX(sort_order), 0) + 1 m FROM links')->fetch()['m'];
 
-    if (!empty($data['pinned'])) {
-        unpin_all();
-    }
-
     $stmt = $pdo->prepare("
-        INSERT INTO links (name, url, image_filename, description, pinned, visible, sort_order, created_at, updated_at)
-        VALUES (:name, :url, :image_filename, :description, :pinned, :visible, :sort_order, datetime('now'), datetime('now'))
+        INSERT INTO links (name, url, image_filename, description, visible, sort_order, created_at, updated_at)
+        VALUES (:name, :url, :image_filename, :description, :visible, :sort_order, datetime('now'), datetime('now'))
     ");
     $stmt->execute([
         ':name' => $data['name'],
         ':url' => $data['url'],
         ':image_filename' => $data['image_filename'] ?? null,
         ':description' => $data['description'] ?? null,
-        ':pinned' => !empty($data['pinned']) ? 1 : 0,
         ':visible' => !empty($data['visible']) ? 1 : 0,
         ':sort_order' => $nextOrder,
     ]);
@@ -103,17 +98,12 @@ function create_link(array $data): int
 
 function update_link(int $id, array $data): void
 {
-    if (!empty($data['pinned'])) {
-        unpin_all();
-    }
-
     $stmt = db()->prepare("
         UPDATE links SET
             name = :name,
             url = :url,
             image_filename = :image_filename,
             description = :description,
-            pinned = :pinned,
             visible = :visible,
             updated_at = datetime('now')
         WHERE id = :id
@@ -124,34 +114,14 @@ function update_link(int $id, array $data): void
         ':url' => $data['url'],
         ':image_filename' => $data['image_filename'] ?? null,
         ':description' => $data['description'] ?? null,
-        ':pinned' => !empty($data['pinned']) ? 1 : 0,
         ':visible' => !empty($data['visible']) ? 1 : 0,
     ]);
-}
-
-function unpin_all(): void
-{
-    db()->exec('UPDATE links SET pinned = 0 WHERE pinned = 1');
 }
 
 function set_link_visibility(int $id, bool $visible): void
 {
     $stmt = db()->prepare('UPDATE links SET visible = :v, updated_at = datetime(\'now\') WHERE id = :id');
     $stmt->execute([':v' => $visible ? 1 : 0, ':id' => $id]);
-}
-
-function toggle_pin(int $id): void
-{
-    $link = get_link($id);
-    if (!$link) {
-        return;
-    }
-    if ($link['pinned']) {
-        db()->prepare('UPDATE links SET pinned = 0 WHERE id = :id')->execute([':id' => $id]);
-    } else {
-        unpin_all();
-        db()->prepare('UPDATE links SET pinned = 1 WHERE id = :id')->execute([':id' => $id]);
-    }
 }
 
 function soft_delete_link(int $id): void
@@ -198,11 +168,9 @@ function prune_trash(): void
 function move_link(int $id, string $direction): void
 {
     $pdo = db();
-    $links = get_admin_links(); // already ordered pinned-first, then sort_order
-    // Reordering only makes sense within the unpinned set; pinned link always sits on top.
-    $unpinned = array_values(array_filter($links, fn($l) => !$l['pinned']));
+    $links = get_admin_links(); // ordered by sort_order
     $index = null;
-    foreach ($unpinned as $i => $l) {
+    foreach ($links as $i => $l) {
         if ((int) $l['id'] === $id) {
             $index = $i;
             break;
@@ -212,12 +180,12 @@ function move_link(int $id, string $direction): void
         return;
     }
     $swapWith = $direction === 'up' ? $index - 1 : $index + 1;
-    if ($swapWith < 0 || $swapWith >= count($unpinned)) {
+    if ($swapWith < 0 || $swapWith >= count($links)) {
         return; // already at the edge
     }
 
-    $a = $unpinned[$index];
-    $b = $unpinned[$swapWith];
+    $a = $links[$index];
+    $b = $links[$swapWith];
 
     $pdo->beginTransaction();
     $stmt = $pdo->prepare('UPDATE links SET sort_order = :o WHERE id = :id');
