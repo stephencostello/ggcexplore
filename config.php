@@ -25,7 +25,7 @@ define('UPLOADS_URL', '/uploads');
 define('SESSION_TIMEOUT_SECONDS', 2 * 60 * 60); // 2 hours
 
 // --- Uploads -------------------------------------------------------------
-define('MAX_UPLOAD_BYTES', 2 * 1024 * 1024); // 2MB
+define('MAX_UPLOAD_BYTES', 3 * 1024 * 1024); // 3MB
 define('ALLOWED_IMAGE_TYPES', ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp']);
 
 // --- Trash -----------------------------------------------------------------

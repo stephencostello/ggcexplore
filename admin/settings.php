@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
           <?php endif; ?>
           <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
-          <p class="field-hint">JPG, PNG or WebP, up to 2MB. Square works best.</p>
+          <p class="field-hint">JPG, PNG or WebP, up to 3MB. Square works best.</p>
         </div>
 
         <div class="field">

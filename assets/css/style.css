@@ -152,7 +152,7 @@ button, input, textarea, select {
 .link-card {
   display: block;
   background: var(--white);
-  border: 1px solid var(--line);
+  border: none;
   border-radius: var(--radius);
   overflow: hidden;
   text-decoration: none;

@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="field">
           <label for="logo">Logo (optional, square works best)</label>
           <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
-          <p class="field-hint">JPG, PNG or WebP, up to 2MB.</p>
+          <p class="field-hint">JPG, PNG or WebP, up to 3MB.</p>
         </div>
 
         <div class="field">

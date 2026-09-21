@@ -267,7 +267,7 @@ function handle_image_upload(array $file, string $targetDir): ?string
         throw new RuntimeException('Image upload failed. Please try again.');
     }
     if ($file['size'] > MAX_UPLOAD_BYTES) {
-        throw new RuntimeException('Image is too large — please keep it under 2MB.');
+        throw new RuntimeException('Image is too large — please keep it under 3MB.');
     }
 
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
