@@ -97,7 +97,6 @@ button, input, textarea, select {
   object-fit: cover;
   margin: 0 auto 16px;
   border: 2px solid var(--red);
-  padding: 3px;
   background: var(--white);
 }
 
@@ -240,19 +239,22 @@ body.home .page {
    the dark hero here — white instead, and heavier now there's no red to
    carry the contrast on its own. */
 body.home .profile-logo {
-  border: 4px solid var(--white);
+  border: 2px solid var(--white);
 }
 
 body.home .profile-name { color: #ffffff; }
 
-body.home .profile-intro { color: rgba(255, 255, 255, 0.72); }
+body.home .profile-intro { color: #eee;
+                           line-height: 1.4;
+                         }
 
 body.home .site-url {
   display: inline-block;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 13px;
+  color: #fff;
   text-decoration: none;
-  margin-top: 2px;
+  font-size: 14px;
+  margin-top: 12px;
+  font-weight: 600;
 }
 
 body.home .site-url:hover { color: rgba(255, 255, 255, 0.85); }
