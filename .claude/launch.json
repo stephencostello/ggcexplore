@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ggcexplore",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "localhost:8950"],
+      "port": 8950
+    }
+  ]
+}

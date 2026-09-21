@@ -63,6 +63,7 @@ function migrate(PDO $pdo): void
             image_filename TEXT,
             description TEXT,
             visible INTEGER NOT NULL DEFAULT 1,
+            expiry_date TEXT,
             sort_order INTEGER NOT NULL DEFAULT 0,
             clicks INTEGER NOT NULL DEFAULT 0,
             deleted_at TEXT,
@@ -92,6 +93,10 @@ function apply_schema_upgrades(PDO $pdo): void
             'social_spotify' => 'TEXT',
             'social_apple_music' => 'TEXT',
             'social_youtube' => 'TEXT',
+        ],
+        'links' => [
+            // ISO date 'YYYY-MM-DD'. NULL = never expires.
+            'expiry_date' => 'TEXT',
         ],
     ];
 

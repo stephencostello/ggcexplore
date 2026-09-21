@@ -5,3 +5,6 @@
 /uploads/logo/*
 !/uploads/links/.gitkeep
 !/uploads/logo/.gitkeep
+
+# macOS Finder junk
+.DS_Store

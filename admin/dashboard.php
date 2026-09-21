@@ -40,8 +40,9 @@ unset($_SESSION['flash']);
         foreach ($links as $i => $link):
             $isFirst = $i === 0;
             $isLast = $i === $lastIndex;
+            $status = link_status($link); // 'active' | 'hidden' | 'expired'
         ?>
-          <li class="admin-link-row<?= $link['visible'] ? '' : ' admin-link-row--hidden' ?>">
+          <li class="admin-link-row<?= $status === 'active' ? '' : ' admin-link-row--hidden' ?>">
             <?php if ($link['image_filename']): ?>
               <img class="admin-link-thumb" src="<?= h(UPLOADS_URL) ?>/links/<?= h($link['image_filename']) ?>" alt="">
             <?php else: ?>
@@ -51,9 +52,12 @@ unset($_SESSION['flash']);
             <div class="admin-link-info">
               <div class="admin-link-name">
                 <?= h($link['name']) ?>
-                <?php if (!$link['visible']): ?><span class="tag" style="background:#4A453D;">HIDDEN</span><?php endif; ?>
+                <?php if ($status !== 'active'): ?><span class="tag" style="background:#4A453D;"><?= $status === 'expired' ? 'EXPIRED' : 'INACTIVE' ?></span><?php endif; ?>
               </div>
               <div class="admin-link-url"><?= h($link['url']) ?></div>
+              <?php if ($link['expiry_date']): ?>
+                <div class="admin-link-expiry">Expires <?= h(date('j M Y', strtotime($link['expiry_date'] . ' 23:59:59'))) ?></div>
+              <?php endif; ?>
             </div>
 
             <div class="admin-link-actions">
@@ -77,7 +81,10 @@ unset($_SESSION['flash']);
                   <?= csrf_field() ?>
                   <input type="hidden" name="id" value="<?= (int) $link['id'] ?>">
                   <input type="hidden" name="visible" value="<?= $link['visible'] ? '0' : '1' ?>">
-                  <button class="icon-btn" title="<?= $link['visible'] ? 'Hide' : 'Show' ?>"><?= $link['visible'] ? '🙈' : '👁' ?></button>
+                  <button type="submit" class="toggle-switch<?= $link['visible'] ? ' toggle-switch--on' : '' ?>"
+                          role="switch" aria-checked="<?= $link['visible'] ? 'true' : 'false' ?>"
+                          aria-label="<?= $link['visible'] ? 'Active — set inactive' : 'Inactive — set active' ?>"
+                          title="<?= $link['visible'] ? 'Active' : 'Inactive' ?>"></button>
                 </form>
                 <form method="post" action="delete.php" onsubmit="return confirm('Move &quot;<?= h(addslashes($link['name'])) ?>&quot; to trash?');">
                   <?= csrf_field() ?>

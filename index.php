@@ -20,7 +20,10 @@ $logo = $settings['logo_filename'] ?? null;
 
 $pageUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://')
     . ($_SERVER['HTTP_HOST'] ?? '') . '/';
-$ogImage = $logo ? $pageUrl . ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : null;
+// The on-page logo circle always shows the static assets/img/logo.jpg (see
+// below) regardless of what's uploaded in Admin -> Settings, so the social
+// share preview image follows the same rule for consistency.
+$ogImage = $pageUrl . ($logo ? ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : 'assets/img/logo.jpg');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -49,11 +52,9 @@ $ogImage = $logo ? $pageUrl . ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : null;
   <div class="container">
 
     <div class="profile">
-      <?php if ($logo): ?>
-        <img class="profile-logo" src="<?= h(UPLOADS_URL) ?>/logo/<?= h($logo) ?>" alt="<?= h($churchName) ?> logo">
-      <?php else: ?>
-        <div class="profile-logo profile-logo--placeholder"><?= h(mb_substr($churchName, 0, 1)) ?></div>
-      <?php endif; ?>
+      <!-- Always the static brand mark, regardless of Admin -> Settings ->
+           Logo upload (that field still exists but no longer feeds this). -->
+      <img class="profile-logo" src="assets/img/logo.jpg" alt="<?= h($churchName) ?> logo">
       <h1 class="profile-name"><?= h($churchName) ?></h1>
 
       <?php if ($intro): ?>

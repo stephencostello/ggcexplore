@@ -40,16 +40,54 @@ function update_settings(array $fields): void
     $stmt->execute($params);
 }
 
+// --- Links: expiry & status ----------------------------------------------
+
+/**
+ * Whether a link's optional expiry date has passed, evaluated against the
+ * server's local time (Europe/London — see config.php) as of right now.
+ * An expiry date takes the link off the public page from 23:59:59 on the
+ * selected day, so a Sunday event link picked for that Sunday stays up for
+ * the whole of that day.
+ */
+function link_is_expired(array $link): bool
+{
+    $expiry = $link['expiry_date'] ?? null;
+    if (!$expiry) {
+        return false;
+    }
+    $cutoff = strtotime($expiry . ' 23:59:59');
+    return $cutoff !== false && time() > $cutoff;
+}
+
+/**
+ * A link's effective status for admin display: 'active', 'hidden' (staff
+ * switched it off), or 'expired'. `visible` stays the source of truth for
+ * "did staff turn this off" — expiry is computed on top of it at render
+ * time, never written back, so clearing expiry_date alone is enough to
+ * bring a link back without also having to re-flip visible.
+ */
+function link_status(array $link): string
+{
+    if (link_is_expired($link)) {
+        return 'expired';
+    }
+    return !empty($link['visible']) ? 'active' : 'hidden';
+}
+
 // --- Links: reads ------------------------------------------------------
 
-/** Visible, non-deleted links for the public page, in manual sort order. */
+/** Active, non-deleted links for the public page, in manual sort order. */
 function get_public_links(): array
 {
-    return db()->query("
+    $links = db()->query("
         SELECT * FROM links
         WHERE deleted_at IS NULL AND visible = 1
         ORDER BY sort_order ASC, id ASC
     ")->fetchAll();
+    // Expiry is time-of-request logic, not something SQLite (UTC-only,
+    // no timezone awareness) can evaluate correctly against Europe/London
+    // — filter it in PHP instead, where date_default_timezone_set applies.
+    return array_values(array_filter($links, fn($link) => !link_is_expired($link)));
 }
 
 /** All non-deleted links for the admin dashboard (visible + hidden). */
@@ -88,8 +126,8 @@ function create_link(array $data): int
     $nextOrder = (int) $pdo->query('SELECT COALESCE(MAX(sort_order), 0) + 1 m FROM links')->fetch()['m'];
 
     $stmt = $pdo->prepare("
-        INSERT INTO links (name, url, image_filename, description, visible, sort_order, created_at, updated_at)
-        VALUES (:name, :url, :image_filename, :description, :visible, :sort_order, datetime('now'), datetime('now'))
+        INSERT INTO links (name, url, image_filename, description, visible, expiry_date, sort_order, created_at, updated_at)
+        VALUES (:name, :url, :image_filename, :description, :visible, :expiry_date, :sort_order, datetime('now'), datetime('now'))
     ");
     $stmt->execute([
         ':name' => $data['name'],
@@ -97,6 +135,7 @@ function create_link(array $data): int
         ':image_filename' => $data['image_filename'] ?? null,
         ':description' => $data['description'] ?? null,
         ':visible' => !empty($data['visible']) ? 1 : 0,
+        ':expiry_date' => $data['expiry_date'] ?? null,
         ':sort_order' => $nextOrder,
     ]);
     return (int) $pdo->lastInsertId();
@@ -111,6 +150,7 @@ function update_link(int $id, array $data): void
             image_filename = :image_filename,
             description = :description,
             visible = :visible,
+            expiry_date = :expiry_date,
             updated_at = datetime('now')
         WHERE id = :id
     ");
@@ -121,6 +161,7 @@ function update_link(int $id, array $data): void
         ':image_filename' => $data['image_filename'] ?? null,
         ':description' => $data['description'] ?? null,
         ':visible' => !empty($data['visible']) ? 1 : 0,
+        ':expiry_date' => $data['expiry_date'] ?? null,
     ]);
 }
 

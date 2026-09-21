@@ -4,7 +4,7 @@ require_once __DIR__ . '/includes/functions.php';
 $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $link = $id ? get_link($id) : null;
 
-if (!$link || $link['deleted_at'] !== null || !$link['visible']) {
+if (!$link || $link['deleted_at'] !== null || !$link['visible'] || link_is_expired($link)) {
     http_response_code(404);
     exit('Link not found.');
 }

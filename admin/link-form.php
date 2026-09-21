@@ -11,7 +11,7 @@ if ($id && (!$link || $link['deleted_at'] !== null)) {
 $isEdit = $link !== null;
 
 $errors = [];
-$values = $link ?: ['name' => '', 'url' => '', 'description' => '', 'visible' => 1, 'image_filename' => null];
+$values = $link ?: ['name' => '', 'url' => '', 'description' => '', 'visible' => 1, 'image_filename' => null, 'expiry_date' => null];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verify();
@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $values['name'] = trim($_POST['name'] ?? '');
     $values['url'] = trim($_POST['url'] ?? '');
     $values['description'] = trim($_POST['description'] ?? '');
+    $values['expiry_date'] = trim($_POST['expiry_date'] ?? '');
     // Visibility isn't editable here — new links go live immediately and are
     // hidden later from the list page. Edits keep whatever's already set.
     $values['visible'] = $isEdit ? (int) $link['visible'] : 1;
@@ -26,6 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($values['name'] === '') $errors[] = 'Name is required.';
     if ($values['url'] === '' || !is_valid_url($values['url'])) $errors[] = 'Please enter a valid URL, including https://';
+    if ($values['expiry_date'] !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $values['expiry_date'])) {
+        $errors[] = 'Expiry date must be a valid date.';
+    }
 
     $newImageFilename = null;
     try {
@@ -49,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'url' => $values['url'],
             'description' => $values['description'] ?: null,
             'visible' => $values['visible'],
+            'expiry_date' => $values['expiry_date'] !== '' ? $values['expiry_date'] : null,
             'image_filename' => $finalImage,
         ];
 
@@ -117,6 +122,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
           <?php endif; ?>
           <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp">
+        </div>
+
+        <div class="field">
+          <label for="expiry_date">Expiry date (optional)</label>
+          <input type="date" id="expiry_date" name="expiry_date" value="<?= h($values['expiry_date'] ?? '') ?>">
+          <p class="field-hint">Link comes off the public page at the end of this day. Leave blank to never expire.</p>
         </div>
 
         <div class="btn-row">

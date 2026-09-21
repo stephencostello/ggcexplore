@@ -102,17 +102,6 @@ button, input, textarea, select {
   background: var(--white);
 }
 
-.profile-logo--placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-weight: 700;
-  font-size: 28px;
-  color: var(--red);
-  background: var(--red-tint);
-}
-
 .profile-name {
   font-size: 24px;
   margin-bottom: 8px;
@@ -225,23 +214,27 @@ body.home {
 }
 
 /* Full-bleed hero: image on the bottom, a transparent-to-#222 fade on    */
-/* top of it so it melts into the page rather than cutting off.           */
+/* top of it so it melts into the page rather than cutting off. Position  */
+/* top-center rather than dead-center so the top of the photo (typically  */
+/* the more important part — faces, stage, banner) isn't the part that    */
+/* gets cropped on narrow/short phone viewports.                          */
 .hero {
-  height: 40vh;
+  height: 25vh;
   background-image:
     linear-gradient(to bottom, rgba(34, 34, 34, 0) 0%, #222222 100%),
     url('../img/hero.jpg');
   background-size: cover;
-  background-position: center;
+  background-position: top center;
   background-repeat: no-repeat;
 }
 
 body.home .page {
-  min-height: 64vh;
+  min-height: 75vh; /* + 25vh hero = 100vh, keeps the footer near the fold */
   padding-top: 0;
   /* Tuck the content up into the faded lower part of the hero so it reads
-     as one continuous piece rather than a band with a gap under it. */
-  margin-top: -12vh;
+     as one continuous piece rather than a band with a gap under it. Same
+     ~30% of hero-height ratio as before, just rescaled for the shorter band. */
+  margin-top: -7vh;
   position: relative;
 }
 
@@ -460,6 +453,12 @@ body.home .social-icon:hover { opacity: 0.6; }
   text-overflow: ellipsis;
 }
 
+.admin-link-expiry {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 1px;
+}
+
 .tag {
   font-size: 10px;
   font-weight: 700;
@@ -477,7 +476,47 @@ body.home .social-icon:hover { opacity: 0.6; }
   flex-shrink: 0;
 }
 
-.icon-btn-row { display: flex; gap: 4px; }
+.icon-btn-row { display: flex; align-items: center; gap: 4px; }
+
+/* Active/Inactive switch — reuses links.visible, just a different UI than
+   a plain hide/show icon. */
+.toggle-switch {
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  position: relative;
+  cursor: pointer;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--ink-soft);
+}
+
+.toggle-switch--on {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.toggle-switch--on::after {
+  left: auto;
+  right: 2px;
+  background: var(--white);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .toggle-switch::after { transition: left 120ms ease, right 120ms ease, background-color 120ms ease; }
+}
 
 .icon-btn {
   width: 30px;
