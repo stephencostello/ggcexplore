@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($form === 'branding') {
         $churchName = trim($_POST['church_name'] ?? '');
         $intro = trim($_POST['intro_text'] ?? '');
-        $copyright = trim($_POST['copyright_text'] ?? '');
         $removeLogo = !empty($_POST['remove_logo']);
 
         if ($churchName === '') $errors[] = 'Church name is required.';
@@ -38,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             update_settings([
                 'church_name' => $churchName,
                 'intro_text' => $intro,
-                'copyright_text' => $copyright,
                 'logo_filename' => $finalLogo,
             ]);
             $success = 'Branding updated.';
@@ -114,11 +112,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="field">
           <label for="intro_text">Short intro paragraph</label>
           <textarea id="intro_text" name="intro_text"><?= h($settings['intro_text']) ?></textarea>
-        </div>
-
-        <div class="field">
-          <label for="copyright_text">Copyright / footer message</label>
-          <input type="text" id="copyright_text" name="copyright_text" value="<?= h($settings['copyright_text']) ?>">
         </div>
 
         <button type="submit" class="btn btn-primary">Save branding</button>

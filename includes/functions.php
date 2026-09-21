@@ -92,14 +92,29 @@ function get_public_links(): array
     return array_values(array_filter($links, fn($link) => !link_is_expired($link)));
 }
 
-/** All non-deleted links for the admin dashboard (visible + hidden). */
+/**
+ * All non-deleted links for the admin dashboard, active ones first (in
+ * manual sort order), then hidden/expired ones after — regardless of
+ * stored sort_order — so an inactive entry never sits above an active one.
+ */
 function get_admin_links(): array
 {
-    return db()->query("
+    $links = db()->query("
         SELECT * FROM links
         WHERE deleted_at IS NULL
         ORDER BY sort_order ASC, id ASC
     ")->fetchAll();
+
+    $active = [];
+    $inactive = [];
+    foreach ($links as $link) {
+        if (link_status($link) === 'active') {
+            $active[] = $link;
+        } else {
+            $inactive[] = $link;
+        }
+    }
+    return array_merge($active, $inactive);
 }
 
 /** Soft-deleted links, most recently deleted first. */
@@ -214,32 +229,20 @@ function prune_trash(): void
     }
 }
 
-function move_link(int $id, string $direction): void
+/**
+ * Persist a new manual order from a drag-and-drop reorder — an array of
+ * link ids in their new top-to-bottom order. Only active links are ever
+ * draggable (see admin/dashboard.php), so this only touches non-deleted
+ * links among the given ids; anything else keeps its current sort_order.
+ */
+function reorder_links(array $orderedIds): void
 {
     $pdo = db();
-    $links = get_admin_links(); // ordered by sort_order
-    $index = null;
-    foreach ($links as $i => $l) {
-        if ((int) $l['id'] === $id) {
-            $index = $i;
-            break;
-        }
-    }
-    if ($index === null) {
-        return;
-    }
-    $swapWith = $direction === 'up' ? $index - 1 : $index + 1;
-    if ($swapWith < 0 || $swapWith >= count($links)) {
-        return; // already at the edge
-    }
-
-    $a = $links[$index];
-    $b = $links[$swapWith];
-
+    $stmt = $pdo->prepare('UPDATE links SET sort_order = :o, updated_at = datetime(\'now\') WHERE id = :id AND deleted_at IS NULL');
     $pdo->beginTransaction();
-    $stmt = $pdo->prepare('UPDATE links SET sort_order = :o WHERE id = :id');
-    $stmt->execute([':o' => $b['sort_order'], ':id' => $a['id']]);
-    $stmt->execute([':o' => $a['sort_order'], ':id' => $b['id']]);
+    foreach ($orderedIds as $i => $id) {
+        $stmt->execute([':o' => $i + 1, ':id' => (int) $id]);
+    }
     $pdo->commit();
 }
 

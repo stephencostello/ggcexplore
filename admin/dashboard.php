@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/csrf.php';
 require_login();
 
 $settings = get_settings();
-$links = get_admin_links();
+$links = get_admin_links(); // active first (manual order), then hidden/expired
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 ?>
@@ -35,14 +35,17 @@ unset($_SESSION['flash']);
       <div class="empty-state">No links yet. Add your first one above.</div>
     <?php else: ?>
       <ul class="admin-links">
-        <?php
-        $lastIndex = count($links) - 1;
-        foreach ($links as $i => $link):
-            $isFirst = $i === 0;
-            $isLast = $i === $lastIndex;
+        <?php foreach ($links as $link):
             $status = link_status($link); // 'active' | 'hidden' | 'expired'
+            $isActive = $status === 'active';
         ?>
-          <li class="admin-link-row<?= $status === 'active' ? '' : ' admin-link-row--hidden' ?>">
+          <li class="admin-link-row<?= $isActive ? '' : ' admin-link-row--hidden' ?>"
+              <?php if ($isActive): ?>draggable="true" data-id="<?= (int) $link['id'] ?>"<?php endif; ?>>
+            <span class="drag-handle<?= $isActive ? '' : ' drag-handle--disabled' ?>"
+                  title="<?= $isActive ? 'Drag to reorder' : '' ?>" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="8" cy="5" r="1.6"/><circle cx="16" cy="5" r="1.6"/><circle cx="8" cy="12" r="1.6"/><circle cx="16" cy="12" r="1.6"/><circle cx="8" cy="19" r="1.6"/><circle cx="16" cy="19" r="1.6"/></svg>
+            </span>
+
             <?php if ($link['image_filename']): ?>
               <img class="admin-link-thumb" src="<?= h(UPLOADS_URL) ?>/links/<?= h($link['image_filename']) ?>" alt="">
             <?php else: ?>
@@ -52,7 +55,7 @@ unset($_SESSION['flash']);
             <div class="admin-link-info">
               <div class="admin-link-name">
                 <?= h($link['name']) ?>
-                <?php if ($status !== 'active'): ?><span class="tag" style="background:#4A453D;"><?= $status === 'expired' ? 'EXPIRED' : 'INACTIVE' ?></span><?php endif; ?>
+                <?php if (!$isActive): ?><span class="tag" style="background:#4A453D;"><?= $status === 'expired' ? 'EXPIRED' : 'INACTIVE' ?></span><?php endif; ?>
               </div>
               <div class="admin-link-url"><?= h($link['url']) ?></div>
               <?php if ($link['expiry_date']): ?>
@@ -60,39 +63,7 @@ unset($_SESSION['flash']);
               <?php endif; ?>
             </div>
 
-            <div class="admin-link-actions">
-              <div class="icon-btn-row">
-                <form method="post" action="move.php">
-                  <?= csrf_field() ?>
-                  <input type="hidden" name="id" value="<?= (int) $link['id'] ?>">
-                  <input type="hidden" name="direction" value="up">
-                  <button class="icon-btn" title="Move up" <?= $isFirst ? 'disabled' : '' ?>>↑</button>
-                </form>
-                <form method="post" action="move.php">
-                  <?= csrf_field() ?>
-                  <input type="hidden" name="id" value="<?= (int) $link['id'] ?>">
-                  <input type="hidden" name="direction" value="down">
-                  <button class="icon-btn" title="Move down" <?= $isLast ? 'disabled' : '' ?>>↓</button>
-                </form>
-                <a class="icon-btn" href="link-form.php?id=<?= (int) $link['id'] ?>" title="Edit">✎</a>
-              </div>
-              <div class="icon-btn-row">
-                <form method="post" action="visibility.php">
-                  <?= csrf_field() ?>
-                  <input type="hidden" name="id" value="<?= (int) $link['id'] ?>">
-                  <input type="hidden" name="visible" value="<?= $link['visible'] ? '0' : '1' ?>">
-                  <button type="submit" class="toggle-switch<?= $link['visible'] ? ' toggle-switch--on' : '' ?>"
-                          role="switch" aria-checked="<?= $link['visible'] ? 'true' : 'false' ?>"
-                          aria-label="<?= $link['visible'] ? 'Active — set inactive' : 'Inactive — set active' ?>"
-                          title="<?= $link['visible'] ? 'Active' : 'Inactive' ?>"></button>
-                </form>
-                <form method="post" action="delete.php" onsubmit="return confirm('Move &quot;<?= h(addslashes($link['name'])) ?>&quot; to trash?');">
-                  <?= csrf_field() ?>
-                  <input type="hidden" name="id" value="<?= (int) $link['id'] ?>">
-                  <button class="icon-btn" title="Delete">🗑</button>
-                </form>
-              </div>
-            </div>
+            <a class="icon-btn" href="link-form.php?id=<?= (int) $link['id'] ?>" title="Edit">✎</a>
           </li>
         <?php endforeach; ?>
       </ul>
@@ -100,5 +71,55 @@ unset($_SESSION['flash']);
 
   </div>
 </div>
+<script>
+// Drag-and-drop reorder. Scoped exception to this app's "no JS beyond
+// native forms" convention: everything else stays plain HTML forms, but
+// there's no good non-JS way to do drag reordering. Only rows the server
+// marked draggable="true" (active links) take part; hidden/expired rows
+// are excluded from both dragging and as drop targets, so nothing can
+// land above the active block only to be pushed back down on next load.
+(function () {
+  var list = document.querySelector('.admin-links');
+  if (!list) return;
+  var dragEl = null;
+
+  list.addEventListener('dragstart', function (e) {
+    var row = e.target.closest('.admin-link-row[draggable="true"]');
+    if (!row) return;
+    dragEl = row;
+    row.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', row.dataset.id);
+  });
+
+  list.addEventListener('dragover', function (e) {
+    if (!dragEl) return;
+    var row = e.target.closest('.admin-link-row[draggable="true"]');
+    if (!row || row === dragEl) return;
+    e.preventDefault();
+    var rect = row.getBoundingClientRect();
+    var before = (e.clientY - rect.top) < rect.height / 2;
+    list.insertBefore(dragEl, before ? row : row.nextSibling);
+  });
+
+  list.addEventListener('drop', function (e) { e.preventDefault(); });
+
+  list.addEventListener('dragend', function () {
+    if (dragEl) dragEl.classList.remove('dragging');
+    dragEl = null;
+
+    var rows = list.querySelectorAll('.admin-link-row[draggable="true"]');
+    var params = new URLSearchParams();
+    params.set('csrf_token', <?= json_encode(csrf_token()) ?>);
+    rows.forEach(function (row) { params.append('order[]', row.dataset.id); });
+
+    fetch('reorder.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString()
+    });
+  });
+})();
+</script>
 </body>
 </html>

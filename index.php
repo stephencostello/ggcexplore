@@ -15,7 +15,6 @@ $socials = get_social_links($settings);
 
 $churchName = $settings['church_name'] ?: 'Grace Generation Church';
 $intro = $settings['intro_text'] ?? '';
-$copyright = $settings['copyright_text'] ?? '';
 $logo = $settings['logo_filename'] ?? null;
 
 $pageUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://')
@@ -62,7 +61,7 @@ $ogImage = $pageUrl . ($logo ? ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : 'ass
       <?php endif; ?>
 
       <!-- Fixed site URL, independent of church_name/settings — always this. -->
-      <a href="http://gracegeneration.co.uk" class="site-url">gracegeneration.co.uk</a>
+      <a href="http://gracegeneration.co.uk" class="site-url" target="_blank" rel="noopener noreferrer">gracegeneration.co.uk</a>
 
       <?php if ($socials): ?>
         <div class="socials">
@@ -97,9 +96,9 @@ $ogImage = $pageUrl . ($logo ? ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : 'ass
       </ul>
     <?php endif; ?>
 
-    <?php if ($copyright): ?>
-      <div class="site-footer"><?= h($copyright) ?></div>
-    <?php endif; ?>
+    <!-- Hardcoded, not settings-driven — copyright_text still exists as an
+         unused DB column (additive-only migration policy: leave, don't drop). -->
+    <div class="site-footer">&copy; <?= date('Y') ?> Grace Generation Church</div>
 
   </div>
 </div>

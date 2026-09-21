@@ -89,6 +89,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 
   <div class="container">
+    <?php if ($isEdit): ?>
+      <div class="link-editor-status">
+        <form method="post" action="visibility.php">
+          <?= csrf_field() ?>
+          <input type="hidden" name="id" value="<?= (int) $id ?>">
+          <input type="hidden" name="return_id" value="<?= (int) $id ?>">
+          <input type="hidden" name="visible" value="<?= $link['visible'] ? '0' : '1' ?>">
+          <button type="submit" class="toggle-switch<?= $link['visible'] ? ' toggle-switch--on' : '' ?>"
+                  role="switch" aria-checked="<?= $link['visible'] ? 'true' : 'false' ?>"
+                  aria-label="<?= $link['visible'] ? 'Active — set inactive' : 'Inactive — set active' ?>"></button>
+        </form>
+        <span><?= $link['visible'] ? 'Active' : 'Inactive' ?></span>
+        <form method="post" action="delete.php" onsubmit="return confirm('Move &quot;<?= h(addslashes($link['name'])) ?>&quot; to trash?');">
+          <?= csrf_field() ?>
+          <input type="hidden" name="id" value="<?= (int) $id ?>">
+          <button type="submit" class="btn btn-secondary btn-small">Delete</button>
+        </form>
+      </div>
+    <?php endif; ?>
+
     <?php foreach ($errors as $error): ?>
       <div class="alert alert-error"><?= h($error) ?></div>
     <?php endforeach; ?>

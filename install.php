@@ -16,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $churchName = trim($_POST['church_name'] ?? '');
     $intro = trim($_POST['intro_text'] ?? '');
-    $copyright = trim($_POST['copyright_text'] ?? '');
     $password = $_POST['password'] ?? '';
     $passwordConfirm = $_POST['password_confirm'] ?? '';
 
@@ -35,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         update_settings([
             'church_name' => $churchName,
             'intro_text' => $intro,
-            'copyright_text' => $copyright,
             'logo_filename' => $logoFilename,
             'admin_password_hash' => password_hash($password, PASSWORD_DEFAULT),
             'setup_complete' => 1,
@@ -85,11 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="field">
           <label for="intro_text">Short intro paragraph</label>
           <textarea id="intro_text" name="intro_text" placeholder="A few words about the church or this page."><?= h($_POST['intro_text'] ?? '') ?></textarea>
-        </div>
-
-        <div class="field">
-          <label for="copyright_text">Copyright / footer message</label>
-          <input type="text" id="copyright_text" name="copyright_text" value="<?= h($_POST['copyright_text'] ?? '© ' . date('Y') . ' Grace Generation Church') ?>">
         </div>
 
         <div class="field">

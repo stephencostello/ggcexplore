@@ -13,4 +13,8 @@ $visible = !empty($_POST['visible']);
 if ($id) {
     set_link_visibility($id, $visible);
 }
-redirect('dashboard.php');
+
+// Toggled from the entry's own editor page? Go back there instead of the
+// list, so staff can keep editing without losing their place.
+$returnId = (int) ($_POST['return_id'] ?? 0);
+redirect($returnId ? 'link-form.php?id=' . $returnId : 'dashboard.php');

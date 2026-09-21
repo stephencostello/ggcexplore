@@ -437,6 +437,23 @@ body.home .social-icon:hover { opacity: 0.6; }
 
 .admin-link-row--hidden { opacity: 0.55; }
 
+.admin-link-row.dragging { opacity: 0.4; }
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  flex-shrink: 0;
+  color: var(--ink-soft);
+  cursor: grab;
+}
+
+.drag-handle--disabled {
+  color: var(--line);
+  cursor: default;
+}
+
 .admin-link-thumb {
   width: 56px;
   height: 40px;
@@ -490,7 +507,24 @@ body.home .social-icon:hover { opacity: 0.6; }
   flex-shrink: 0;
 }
 
-.icon-btn-row { display: flex; align-items: center; gap: 4px; }
+/* Status/delete bar on the link editor page (moved off the dashboard
+   cards, which now only carry a drag handle + edit icon). */
+.link-editor-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: var(--max-width);
+  margin-bottom: 16px;
+}
+
+.link-editor-status span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.link-editor-status form:last-child { margin-left: auto; }
 
 /* Active/Inactive switch — reuses links.visible, just a different UI than
    a plain hide/show icon. */
