@@ -320,3 +320,17 @@ function is_valid_url(string $url): bool
 {
     return (bool) filter_var($url, FILTER_VALIDATE_URL);
 }
+
+/**
+ * Cache-busting query string for assets/css/style.css, based on the file's
+ * own mtime. Browsers cache a stylesheet URL indefinitely once fetched, so
+ * without this, a deploy that changes the CSS can go unnoticed by anyone
+ * with the page already cached — appending ?v=<mtime> changes the URL (and
+ * so forces a re-fetch) automatically on every deploy that touches the
+ * file, with nothing to remember to bump by hand.
+ */
+function css_version(): string
+{
+    $path = BASE_DIR . '/assets/css/style.css';
+    return (string) (is_file($path) ? filemtime($path) : time());
+}
