@@ -13,11 +13,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fields = [];
     foreach (SOCIAL_PLATFORMS as $key => $meta) {
         $col = social_column($key);
+        $activeCol = social_active_column($key);
         $val = trim($_POST[$col] ?? '');
         if ($val !== '' && !is_valid_url($val)) {
             $errors[] = $meta['label'] . ' must be a full URL, including https://';
         }
         $fields[$col] = $val !== '' ? $val : null;
+        // Checkboxes are only present in $_POST when checked.
+        $fields[$activeCol] = isset($_POST[$activeCol]) ? 1 : 0;
     }
 
     if (!$errors) {
@@ -47,12 +50,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="card">
       <form method="post">
         <?= csrf_field() ?>
-        <p class="field-hint" style="margin-bottom:16px;">Shown as a row of icons under the intro text, in this order. Leave a field blank to hide that icon.</p>
+        <p class="field-hint" style="margin-bottom:16px;">Shown as a row of icons under the intro text, in this order. A blank URL always hides the icon; the switch lets you hide it temporarily without losing the URL.</p>
 
-        <?php foreach (SOCIAL_PLATFORMS as $key => $meta): $col = social_column($key); ?>
+        <?php foreach (SOCIAL_PLATFORMS as $key => $meta):
+            $col = social_column($key);
+            $activeCol = social_active_column($key);
+            $isActive = !isset($settings[$activeCol]) || (int) $settings[$activeCol] !== 0;
+        ?>
           <div class="field">
             <label for="<?= h($col) ?>"><?= h($meta['label']) ?></label>
             <input type="url" id="<?= h($col) ?>" name="<?= h($col) ?>" value="<?= h($settings[$col] ?? '') ?>" placeholder="https://">
+            <div class="checkbox-row" style="margin-top:8px;margin-bottom:0;">
+              <input type="checkbox" class="toggle-checkbox" id="<?= h($activeCol) ?>" name="<?= h($activeCol) ?>" value="1" <?= $isActive ? 'checked' : '' ?>>
+              <label for="<?= h($activeCol) ?>">Show on public page</label>
+            </div>
           </div>
         <?php endforeach; ?>
 

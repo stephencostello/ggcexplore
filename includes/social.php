@@ -42,13 +42,28 @@ function social_column(string $key): string
     return 'social_' . $key;
 }
 
-/** Ordered [key => url] for platforms that have a non-empty URL in settings. */
+/** settings column name that holds the show/hide flag for a platform key. */
+function social_active_column(string $key): string
+{
+    return 'social_' . $key . '_active';
+}
+
+/**
+ * Ordered [key => url] for platforms that both have a URL set AND are
+ * switched on. A platform can have a saved URL but still be hidden — the
+ * URL stays in the database either way, so turning it back on doesn't
+ * require retyping it.
+ */
 function get_social_links(array $settings): array
 {
     $out = [];
     foreach (SOCIAL_PLATFORMS as $key => $meta) {
         $url = trim((string) ($settings[social_column($key)] ?? ''));
-        if ($url !== '') {
+        $activeCol = social_active_column($key);
+        // Missing column (shouldn't happen post-migration, but don't hide
+        // on a technicality) defaults to active, same as the DB default.
+        $active = !array_key_exists($activeCol, $settings) || (int) $settings[$activeCol] !== 0;
+        if ($url !== '' && $active) {
             $out[$key] = $url;
         }
     }

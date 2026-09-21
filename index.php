@@ -61,6 +61,9 @@ $ogImage = $pageUrl . ($logo ? ltrim(UPLOADS_URL, '/') . '/logo/' . $logo : 'ass
         <p class="profile-intro"><?= nl2br(h($intro)) ?></p>
       <?php endif; ?>
 
+      <!-- Fixed site URL, independent of church_name/settings — always this. -->
+      <a href="http://gracegeneration.co.uk" class="site-url">gracegeneration.co.uk</a>
+
       <?php if ($socials): ?>
         <div class="socials">
           <?php foreach ($socials as $key => $url): ?>

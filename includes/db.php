@@ -51,7 +51,13 @@ function migrate(PDO $pdo): void
             social_facebook TEXT,
             social_spotify TEXT,
             social_apple_music TEXT,
-            social_youtube TEXT
+            social_youtube TEXT,
+            social_whatsapp_active INTEGER NOT NULL DEFAULT 1,
+            social_instagram_active INTEGER NOT NULL DEFAULT 1,
+            social_facebook_active INTEGER NOT NULL DEFAULT 1,
+            social_spotify_active INTEGER NOT NULL DEFAULT 1,
+            social_apple_music_active INTEGER NOT NULL DEFAULT 1,
+            social_youtube_active INTEGER NOT NULL DEFAULT 1
         )
     ");
 
@@ -93,6 +99,15 @@ function apply_schema_upgrades(PDO $pdo): void
             'social_spotify' => 'TEXT',
             'social_apple_music' => 'TEXT',
             'social_youtube' => 'TEXT',
+            // Lets staff temporarily hide a platform's icon without losing
+            // (and having to retype) its URL. Default 1 so this migration
+            // is a no-op for every platform that already has a URL set.
+            'social_whatsapp_active' => 'INTEGER NOT NULL DEFAULT 1',
+            'social_instagram_active' => 'INTEGER NOT NULL DEFAULT 1',
+            'social_facebook_active' => 'INTEGER NOT NULL DEFAULT 1',
+            'social_spotify_active' => 'INTEGER NOT NULL DEFAULT 1',
+            'social_apple_music_active' => 'INTEGER NOT NULL DEFAULT 1',
+            'social_youtube_active' => 'INTEGER NOT NULL DEFAULT 1',
         ],
         'links' => [
             // ISO date 'YYYY-MM-DD'. NULL = never expires.

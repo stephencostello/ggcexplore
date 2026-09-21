@@ -20,9 +20,11 @@ function update_settings(array $fields): void
     $allowed = [
         'church_name', 'logo_filename', 'intro_text', 'copyright_text',
         'admin_password_hash', 'setup_complete',
-        'social_whatsapp', 'social_instagram', 'social_facebook',
-        'social_spotify', 'social_apple_music', 'social_youtube',
     ];
+    foreach (SOCIAL_PLATFORMS as $key => $meta) {
+        $allowed[] = social_column($key);
+        $allowed[] = social_active_column($key);
+    }
     $set = [];
     $params = [];
     foreach ($fields as $key => $value) {
